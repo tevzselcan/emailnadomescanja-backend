@@ -9,6 +9,10 @@ import { configValidationSchema } from 'config/schema.config';
 import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from 'middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
+import { SubstitutionsModule } from './substitutions/substitutions.module';
+import { MailModule } from './mail/mail.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { UsersModule } from './users/users.module';
     }),
     DatabaseModule,
     UsersModule,
+    SubstitutionsModule,
+    MailModule,
+    CronModule,
+    //ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],

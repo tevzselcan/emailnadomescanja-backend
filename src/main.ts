@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import express from 'express';
 import Logging from 'library/Logging';
+import * as Handlebars from 'handlebars';
 
 import { AppModule } from './modules/app.module';
 
@@ -17,6 +17,10 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
+
+  Handlebars.registerHelper('even', function (value: number) {
+    return value % 2 === 0;
+  });
 
   const PORT = process.env.PORT || 8080;
   await app.listen(PORT);
