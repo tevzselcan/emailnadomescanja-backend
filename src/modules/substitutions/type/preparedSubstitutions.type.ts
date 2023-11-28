@@ -1,3 +1,4 @@
+import { ClassChange } from './classChange.type';
 import { Substitution } from './substitution.type';
 
 export type PreparedSubstitions = {
@@ -5,4 +6,5 @@ export type PreparedSubstitions = {
   email: string;
   unsubscribeLink: string;
   substitutions: Substitution[];
+  classChanges: ClassChange[];
 };

@@ -27,7 +27,7 @@ export class SubstitutionsController {
   @Get('test')
   @HttpCode(HttpStatus.OK)
   async getSubsForTeacher() {
-    //return await this.substitutionsService.sendPreparedTeacherSubstitutions();
-    return await this.substitutionsService.getAllSubstitutions();
+    return await this.substitutionsService.sendPreparedTeacherSubstitutions();
+    //return await this.substitutionsService.getAllSubstitutions();
   }
 }

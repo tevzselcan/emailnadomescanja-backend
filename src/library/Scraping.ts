@@ -3,69 +3,25 @@ import * as cheerio from 'cheerio';
 import { ClassChange } from 'modules/substitutions/type/classChange.type';
 import { SubstitutionsForTheDay } from 'modules/substitutions/type/substititutionsForTheDay.type';
 import { Substitution } from 'modules/substitutions/type/substitution.type';
+import Logging from './Logging';
 require('dotenv').config();
 
-export async function getAllSubstitutions(): Promise<SubstitutionsForTheDay[]> {
-  //const url = 'https://ker.sc-celje.si/nadomescanja-za-sredo-18-10-2023/';
-  const url = 'https://ker.sc-celje.si/nadomescanje/';
-  //const className = 'ed-content-wrap';
-  const className = 'wp-show-posts-entry-content';
-
-  const axiosResponse = await axios.get(url);
-  const htmlCode = axiosResponse.data;
-  const $ = await cheerio.load(htmlCode);
-
-  let substitutionsForTheDay: SubstitutionsForTheDay[] = [];
-
-  const subtititionsTable = $(`.${className}`);
-  for (let i = 0; i < subtititionsTable.length; i++) {
-    const dateElement = $(subtititionsTable[i]).find('p');
-    const date = extractDate(dateElement.toString());
-
-    const substitutionsAndClassChanges: SubstitutionsForTheDay = {
-      date,
-      substitutions: [],
-      classChanges: [],
-    };
-
-    const tables = $(subtititionsTable[i]).find('table');
-    for (let j = 0; j < tables.length; j++) {
-      const rows = $(tables[j]).find('tr');
-      const columnCount = $(rows[0]).find('td').length;
-
-      if (columnCount === 7) {
-        const extractedSubstitutions = await extractSubstitutions(
-          $(subtititionsTable[i]).html()?.toString()!,
-        );
-        substitutionsAndClassChanges.substitutions.push(
-          ...extractedSubstitutions,
-        );
-      } else if (columnCount === 5) {
-        const extractedClassChanges = await extractClassChanges(
-          $(subtititionsTable[i]).html()?.toString()!,
-        );
-        substitutionsAndClassChanges.classChanges.push(
-          ...extractedClassChanges,
-        );
-      }
-    }
-    substitutionsForTheDay.push(substitutionsAndClassChanges);
+async function fetchHTML(url: string): Promise<string> {
+  try {
+    const axiosResponse = await axios.get(url);
+    return axiosResponse.data;
+  } catch (error) {
+    Logging.error(error);
   }
-
-  return substitutionsForTheDay;
 }
 
-function extractDate(text: string) {
+function extractDate(text: string): string | undefined {
   const regex = /(\d{1,2}\.\s\d{1,2}\.\s\d{4})/g;
   const match = regex.exec(text);
-  if (match) {
-    const dateString = match[1];
-    return dateString;
-  }
+  return match ? match[1] : undefined;
 }
 
-export function extractSubstitutions(html: string): Substitution[] {
-  const $ = cheerio.load(html);
+function extractSubstitutions($: cheerio.Root): Substitution[] {
   const substitutions: Substitution[] = [];
   const rows = $('table tbody tr');
 
@@ -90,8 +46,7 @@ export function extractSubstitutions(html: string): Substitution[] {
   return substitutions;
 }
 
-export function extractClassChanges(html: string): ClassChange[] {
-  const $ = cheerio.load(html);
+function extractClassChanges($: cheerio.Root): ClassChange[] {
   const classChanges: ClassChange[] = [];
   const rows = $('table tbody tr');
 
@@ -114,4 +69,36 @@ export function extractClassChanges(html: string): ClassChange[] {
   classChanges.shift();
 
   return classChanges;
+}
+
+export async function getAllSubstitutions(): Promise<SubstitutionsForTheDay[]> {
+  //const url = 'https://ker.sc-celje.si/nadomescanja-za-sredo-18-10-2023/';
+  const url = 'https://ker.sc-celje.si/nadomescanje/';
+  //const className = 'ed-content-wrap';
+  const className = 'wp-show-posts-entry-content';
+
+  try {
+    const htmlCode = await fetchHTML(url);
+    const $ = cheerio.load(htmlCode);
+
+    const subtititionsTable = $(`.${className}`);
+    const substitutionsForTheDay: SubstitutionsForTheDay[] = [];
+
+    subtititionsTable.each((_index, element) => {
+      const dateElement = $(element).find('p');
+      const date = extractDate(dateElement.toString());
+
+      const substitutionsAndClassChanges: SubstitutionsForTheDay = {
+        date: date || '',
+        substitutions: extractSubstitutions($),
+        classChanges: extractClassChanges($),
+      };
+
+      substitutionsForTheDay.push(substitutionsAndClassChanges);
+    });
+
+    return substitutionsForTheDay;
+  } catch (error) {
+    Logging.error(error);
+  }
 }
