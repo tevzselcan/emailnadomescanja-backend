@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+    api:
+        container_name: emailnadomescanja-backend
+        build:
+            dockerfile: Dockerfile
+            context: .
+        env_file:
+            - .env.production
+        environment:
+            NODE_ENV: production
+            STAGE: production
+        ports:
+            - "8080:8080"
