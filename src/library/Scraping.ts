@@ -21,9 +21,12 @@ function extractDate(text: string): string | undefined {
   return match ? match[1] : undefined;
 }
 
-function extractSubstitutions($: cheerio.Root): Substitution[] {
+function extractSubstitutions(
+  $: cheerio.Root,
+  table: cheerio.Cheerio,
+): Substitution[] {
   const substitutions: Substitution[] = [];
-  const rows = $('table tbody tr');
+  const rows = table.find('tbody tr');
 
   rows.slice(1).each((_index, row) => {
     const tds = $(row).find('td');
@@ -46,9 +49,12 @@ function extractSubstitutions($: cheerio.Root): Substitution[] {
   return substitutions;
 }
 
-function extractClassChanges($: cheerio.Root): ClassChange[] {
+function extractClassChanges(
+  $: cheerio.Root,
+  table: cheerio.Cheerio,
+): ClassChange[] {
   const classChanges: ClassChange[] = [];
-  const rows = $('table tbody tr');
+  const rows = table.find('tbody tr');
 
   rows.slice(1).each((_index, row) => {
     const tds = $(row).find('td');
@@ -72,26 +78,24 @@ function extractClassChanges($: cheerio.Root): ClassChange[] {
 }
 
 export async function getAllSubstitutions(): Promise<SubstitutionsForTheDay[]> {
-  //const url = 'https://ker.sc-celje.si/nadomescanja-za-sredo-18-10-2023/';
   const url = 'https://ker.sc-celje.si/nadomescanje/';
-  //const className = 'ed-content-wrap';
   const className = 'wp-show-posts-entry-content';
 
   try {
     const htmlCode = await fetchHTML(url);
     const $ = cheerio.load(htmlCode);
 
-    const subtititionsTable = $(`.${className}`);
+    const subtititionsTables = $(`.${className}`);
     const substitutionsForTheDay: SubstitutionsForTheDay[] = [];
 
-    subtititionsTable.each((_index, element) => {
-      const dateElement = $(element).find('p');
+    subtititionsTables.each((_index, table) => {
+      const dateElement = $(table).find('p');
       const date = extractDate(dateElement.toString());
 
       const substitutionsAndClassChanges: SubstitutionsForTheDay = {
         date: date || '',
-        substitutions: extractSubstitutions($),
-        classChanges: extractClassChanges($),
+        substitutions: extractSubstitutions($, $(table)),
+        classChanges: extractClassChanges($, $(table)),
       };
 
       substitutionsForTheDay.push(substitutionsAndClassChanges);
