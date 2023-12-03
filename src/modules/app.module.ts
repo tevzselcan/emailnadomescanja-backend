@@ -26,7 +26,7 @@ import { CronModule } from './cron/cron.module';
     SubstitutionsModule,
     MailModule,
     CronModule,
-    //ScheduleModule.forRoot(),
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [],
