@@ -18,6 +18,7 @@ export class MailService {
       },
     });
   }
+
   async sendSubstitutionEmails(substitutionsData: any[]): Promise<void> {
     for (const entry of substitutionsData) {
       const { email, date, unsubscribeLink, substitutions, classChanges } =
