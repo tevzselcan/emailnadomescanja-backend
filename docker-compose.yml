@@ -22,4 +22,7 @@ services:
             POSTGRES_PASSWORD: cepatoshakajopolpares
             POSTGRES_DB: emailnadomescanja
         volumes:
-            - ./dbdata:/var/lib/postgresql/data 
+            - pgdata:/var/lib/postgresql/data
+
+volumes:
+    pgdata:
