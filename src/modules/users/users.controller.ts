@@ -22,6 +22,14 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  @Get('subscribed/:code')
+  @HttpCode(HttpStatus.OK)
+  async getSubscribed(@Param('code') code: string): Promise<User[]> {
+    if (code == process.env.SECERET_CODE) {
+      return this.usersService.findAll();
+    } else return;
+  }
+
   @Get('unsubscribe/:id')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string): Promise<string> {
