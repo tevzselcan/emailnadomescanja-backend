@@ -23,6 +23,5 @@ services:
             POSTGRES_DB: emailnadomescanja
         volumes:
             - pgdata:/var/lib/postgresql/data
-
 volumes:
     pgdata:
