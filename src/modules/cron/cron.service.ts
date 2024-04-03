@@ -6,7 +6,7 @@ import { SubstitutionsService } from 'modules/substitutions/substitutions.servic
 @Injectable()
 export class CronService {
   constructor(private substitsionService: SubstitutionsService) {}
-  @Cron('0 19 * * 0-4')
+  @Cron('0 20 * * 0-4')
   async sendSubtitutionsMail() {
     try {
       await this.substitsionService.setSubstitutions();
