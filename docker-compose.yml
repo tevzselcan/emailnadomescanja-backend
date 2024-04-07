@@ -1,27 +1,29 @@
 version: "3.9"
 services:
-    api:
-        container_name: emailnadomescanja-backend
-        build:
-            dockerfile: Dockerfile
-            context: .
-        env_file:
-            - .env.production
-        environment:
-            NODE_ENV: production
-            STAGE: production
-        ports:
-            - "8080:8080"
-    postgres:
-        image: postgres:13
-        restart: always
-        ports:
-            - "35000:5432"
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: cepatoshakajopolpares
-            POSTGRES_DB: emailnadomescanja
-        volumes:
-            - pgdata:/var/lib/postgresql/data
+  api:
+    container_name: emailnadomescanja-backend
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      STAGE: production
+      TZ: "Europe/Berlin"
+    ports:
+      - "8080:8080"
+  postgres:
+    image: postgres:13
+    restart: always
+    ports:
+      - "35000:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: cepatoshakajopolpares
+      POSTGRES_DB: emailnadomescanja
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
 volumes:
-    pgdata:
+  pgdata:
